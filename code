@@ -1,0 +1,63 @@
+     using System.IO;
+     using System.Net;
+     using System.Text;  
+       
+       
+       
+       static void Main(string[] args)
+        {
+            // Create a request using a URL that can receive a post.
+            WebRequest request = WebRequest.Create("https://www.domain.com/api/Controller/Action");
+
+            // Set the Method property of the request to POST.
+            request.Method = "POST";
+
+            //----------- For Header --------------
+            request.Headers.Add("Key", "Value");
+            //----------- For Header(Example) -----
+            //request.Headers.Add("Accept", "application/json");
+            //request.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+            //request.Headers.Add("Cookie", "TS017e1=1093786a9fe6027b2e6a40f");
+
+
+            //--------- For "x-www-form-urlencoded" type data ---------
+            string postData = "Key=Value&Key=Value&Key=Value";
+            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+
+            //--------- For "x-www-form-urlencoded" type data(Example) ---------
+            //string postData = "client_id=LsnDXYjII&client_secret=l4IBuD&grant_type=client_credentials";
+            //byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+
+            // Set the ContentType property of the WebRequest.
+            request.ContentType = "application/x-www-form-urlencoded";
+
+            // Set the ContentLength property of the WebRequest.
+            request.ContentLength = byteArray.Length;
+
+            // Get the request stream.
+            Stream dataStream = request.GetRequestStream();
+            // Write the data to the request stream.
+            dataStream.Write(byteArray, 0, byteArray.Length);
+            // Close the Stream object.
+            dataStream.Close();
+
+            // Get the response.
+            WebResponse response = request.GetResponse();
+            // Display the status.
+            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+
+            // Get the stream containing content returned by the server.
+            // The using block ensures the stream is automatically closed.
+            using (dataStream = response.GetResponseStream())
+            {
+                // Open the stream using a StreamReader for easy access.
+                StreamReader reader = new StreamReader(dataStream);
+                // Read the content.
+                string responseFromServer = reader.ReadToEnd();
+                // Display the content.
+                Console.WriteLine(responseFromServer);
+            }
+
+            // Close the response.
+            response.Close();
+        }
